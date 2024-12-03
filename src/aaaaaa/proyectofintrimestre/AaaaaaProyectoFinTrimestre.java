@@ -28,24 +28,27 @@ public static void menuInicio( int[]opciones){
     Scanner sc = new Scanner(System.in);
    
     int opcion1;
-    System.out.println("1.Continuar con controles predeterminados");
-    System.out.println("2.Cambiar configuracion del juego");
-    System.out.println("3.Terminar el juego");
-    opcion1=sc.nextInt();
-    switch(opcion1)
-    {
-      case 1:
-        break;
-      case 2:
-        MenuDeOpciones(opciones);
-        break;
-      case 3:
-        
-        break;
-      default:
-        System.out.println("elige una opción correcta");    
+   while (true) {
+        System.out.println("1. Continuar con controles predeterminados");
+        System.out.println("2. Cambiar configuración del juego");
+        System.out.println("3. Terminar el juego");
+        opcion1 = sc.nextInt();
+
+   switch (opcion1) {
+            case 1:
+                return;
+            case 2:
+                MenuDeOpciones(opciones);
+                return;
+            case 3:
+                System.out.println("Juego terminado.");
+                return;
+            default:
+                limpiarPantalla();
+                System.out.println("Elige una opción correcta.");
+        }
     }
- } 
+}
 
 public static void MenuDeOpciones(int[]opciones){
     Scanner sc = new Scanner(System.in);
@@ -84,6 +87,18 @@ opcion2=sc.nextInt();
     System.out.println("Elige una opción correcta");    
     }
         
+}
+public static void limpiarPantalla() {
+    try {
+        if (System.getProperty("os.name").contains("Windows")) {
+            new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
+        } else {
+            System.out.print("\033[H\033[2J");
+            System.out.flush();
+        }
+    } catch (Exception e) {
+        System.out.println("No se pudo limpiar la pantalla.");
+    }
 }
 public static void TamañoTablero(int[]opciones)
 {
@@ -140,7 +155,8 @@ public static void Zoom()
         //Llamamos al menu
         Scanner sc = new Scanner(System.in);
         menuInicio(opciones);
-        String[][] tablero  = new String[opciones[0]][opciones[1]];
+        String[][] tablero = crearTablero(opciones[0], opciones[1]);
+
         boolean[][] descubiertas = new boolean[opciones[0]][opciones[1]];
         
         
@@ -156,23 +172,38 @@ public static void Zoom()
             System.out.println("Elige la segunda celda (fila y columna):");
             int[] segundaCelda = obtenerCoordenadas(opciones);
             descubiertas[segundaCelda[0]][segundaCelda[1]] = true;
-                    
-           //--- 
-           
-            if (tablero[primeraCelda[0]][primeraCelda[1]].equals(tablero[segundaCelda[0]][segundaCelda[1]])) {
-                System.out.println("¡Pareja encontrada!");
-                parejasEncontradas++;
-            } else {
-                System.out.println("No coinciden. Intenta nuevamente.");
-                descubiertas[primeraCelda[0]][primeraCelda[1]] = false;
-                descubiertas[segundaCelda[0]][segundaCelda[1]] = false;
-                intentos++;
-            }
-        }
+            
+            
+            mostrarTablero(tablero, descubiertas, opciones);
 
-        System.out.println("¡Felicidades! Has encontrado todas las parejas.");
-        System.out.println("Intentos totales: " + intentos);
+             
+         if (tablero[primeraCelda[0]][primeraCelda[1]].equals(tablero[segundaCelda[0]][segundaCelda[1]])) {
+            System.out.println("¡Pareja encontrada!");
+            parejasEncontradas++;
+        } else 
+        {
+            System.out.println("No coinciden. Mostrando por 1 segundo...");
+            try
+            {
+               
+              Thread.sleep(opciones[4]); 
+              
+            } 
+            catch (InterruptedException e)
+            {
+                System.out.println("Ha fallado el sistema");
+            }
+
+           
+            descubiertas[primeraCelda[0]][primeraCelda[1]] = false;
+            descubiertas[segundaCelda[0]][segundaCelda[1]] = false;
+        }
+        intentos++;
     }
+
+    System.out.println("¡Felicidades! Has encontrado todas las parejas.");
+    System.out.println("Intentos totales: " + intentos);
+}
 
     
   
@@ -180,59 +211,55 @@ public static void Zoom()
     
     
     // Mostrar el tablero al jugador
-    public static void mostrarTablero(String[][] tablero, boolean[][] descubiertas,int[]opciones) {
-       
-        
+   public static void mostrarTablero(String[][] tablero, boolean[][] descubiertas, int[] opciones) {
         System.out.print("  | ");
-        for (int c = 0; c <  tablero[0].length; c++)
-        {
-        System.out.print(" "+(c + 1) + " |");
-        
+        for (int c = 0; c < tablero[0].length; c++) {
+            System.out.print(" " + (c + 1) + " |");
         }
-               System.out.println("");
-       
-        for (int f = 0; f < tablero.length; f++) 
-        {
-           for(int r=0;r<tablero[0].length;r++)
-            {
-                System.out.print("-----");               
-            }
-            System.out.println("");
-            System.out.print((f + 1) + " | ");
-                for (int c = 0; c < tablero[0].length; c++)
-                {
-                if (descubiertas[f][c]) 
-                    {
-                     System.out.print(tablero[f][c] + " ");
-                    } 
-                else
-                    {
-                        System.out.print(" * |");
-                    }
-                }
+        System.out.println();
 
-            System.out.println("");
-           
+        for (int f = 0; f < tablero.length; f++) {
+            for (int r = 0; r < tablero[0].length; r++)
+            {
+                System.out.print("-----");
+            }
+            System.out.println();
+            System.out.print((f + 1) + " | ");
+            for (int c = 0; c < tablero[0].length; c++)
+            {
+                if (descubiertas[f][c]) 
+                {
+                    System.out.print(" "+tablero[f][c] + " |");
+                } 
+                else 
+                {
+                    System.out.print(" * |");
+                }
+            }
+            System.out.println();
         }
     }
     
     
     // Crear un tablero inicial con pares de letras
-    public static String[][] crearTablero(int filas, int columnas) {
+   public static String[][] crearTablero(int filas, int columnas) {
+        int tamaño = filas * columnas;
+        String[] simbolos = generarSimbolos(tamaño / 2);
         String[][] tablero = new String[filas][columnas];
-        char[] simbolos = generarSimbolos((filas * columnas) / 2);
-        int indice = 0;
 
-        for (int i = 0; i < filas; i++) {
-            for (int j = 0; j < columnas; j++) {
-                tablero[i][j] = String.valueOf(simbolos[indice / 2]);
+        int indice = 0;
+        for (int i = 0; i < filas; i++) 
+        {
+            for (int j = 0; j < columnas; j++)
+            {
+                tablero[i][j] = simbolos[indice / 2];
                 indice++;
             }
         }
-        mezclarTablero(tablero);
-                return tablero;
-            }
 
+        mezclarTablero(tablero);
+        return tablero;
+    }
     
     
         
@@ -241,8 +268,10 @@ public static void Zoom()
         int filas = tablero.length;
         int columnas = tablero[0].length;
 
-        for (int i = 0; i < filas; i++) {
-            for (int j = 0; j < columnas; j++) {
+        for (int i = 0; i < filas; i++) 
+        {
+            for (int j = 0; j < columnas; j++) 
+            {
                 int filaAleatoria = (int) (Math.random() * filas);
                 int columnaAleatoria = (int) (Math.random() * columnas);
 
@@ -254,43 +283,40 @@ public static void Zoom()
         }
     
     // Generar una lista de símbolos para las parejas
-    public static String[] generarSimbolos(int numeroDePares) {
-        String[] simbolos = new String[numeroDePares];
-        char letra = 'A';
-        for (int i = 0; i < numeroDePares; i++) {
-            simbolos[i] = String.valueOf(letra);
-            letra++;
+   public static String[] generarSimbolos(int numeroDePares) 
+   {
+        String[] simbolos = new String[numeroDePares * 2];
+        int ascii = 65; 
+
+        for (int i = 0; i < numeroDePares; i++)
+        {
+            simbolos[i * 2] = String.valueOf((char) ascii); 
+            simbolos[i * 2 + 1] = String.valueOf((char) (ascii + 32)); 
+            ascii++;
         }
+
         return simbolos;
     }
-
-    
-    
-    
-
-   
-
-    
-
-    
     
     // Obtener coordenadas válidas del usuario
-   public static int[] obtenerCoordenadas( int[] opciones) {
-        Scanner sc = new Scanner(System.in);
-        int fila, columna;
-        while (true) {
-            System.out.println("Introduce fila (1-" + opciones[0] + "):");
-            fila = sc.nextInt() - 1;
-            System.out.println("Introduce columna (1-" + opciones[1] + "):");
-            columna = sc.nextInt() - 1;
+   public static int[] obtenerCoordenadas(int[] opciones) {
+    Scanner sc = new Scanner(System.in);
+    int fila, columna;
+    while (true) {
+        System.out.println("Introduce fila (1-" + opciones[0] + "):");
+        fila = sc.nextInt() - 1;
+        System.out.println("Introduce columna (1-" + opciones[1] + "):");
+        columna = sc.nextInt() - 1;
 
-            if (fila >= 0 && fila < opciones[0] && columna >= 0 && columna < opciones[1]) {
-                return new int[]{fila, columna};
-            } else {
-                System.out.println("Coordenadas inválidas. Intenta de nuevo.");
-            }
+        if (fila >= 0 && fila < opciones[0] && columna >= 0 && columna < opciones[1]) {
+            return new int[]{fila, columna};
+        } else {
+            limpiarPantalla();
+            System.out.println("Coordenadas inválidas. Intenta de nuevo.");
         }
-   }
+    }
+}
+
 }
 
         
