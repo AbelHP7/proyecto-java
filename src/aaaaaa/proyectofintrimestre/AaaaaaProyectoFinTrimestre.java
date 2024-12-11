@@ -18,30 +18,37 @@ public class AaaaaaProyectoFinTrimestre {
 
 
 
-public static void menuInicio( int[]opciones){
+public static boolean menuInicio( int[]opciones){
     Scanner sc = new Scanner(System.in);
-
     int opcion1;
     
+    boolean salirMenu = true;   
+    while(salirMenu==true){
+        System.out.println("Menu Inicial");
         System.out.println("1. Continuar con controles predeterminados");
         System.out.println("2. Cambiar configuración del juego");
         System.out.println("3. Terminar el juego");
-        opcion1 = sc.nextInt();
-
+       
+         opcion1 = sc.nextInt();
+     
+    
          switch (opcion1) {
             case 1:
+                 MecanismoDeJuego(opciones);
                 break;
             case 2:
                 MenuDeOpciones(opciones);
                 break;
             case 3:
+                salirMenu=false;
                 System.out.println("Juego terminado.");
                 break;
             default:
-
+                    
                 System.out.println("Elige una opción correcta.");
             }
-        
+    }
+    return salirMenu;
 }
 
 //Menu para elegir las opciones modificadas del usuario
@@ -49,44 +56,44 @@ public static void MenuDeOpciones(int[]opciones)
     {
         boolean salida=true;
         do{
-        Scanner sc = new Scanner(System.in);
-        System.out.println("1.Tamaño del tablero");
-        System.out.println("2.Dificultad");
-        System.out.println("3.Numero de errores");
-        System.out.println("4.Tiempo de aparición");
-        System.out.println("5.Zoom");
-        System.out.println("6.Jugar");
+            Scanner sc = new Scanner(System.in);
+            System.out.println("1.Tamaño del tablero");
+            System.out.println("2.Dificultad");
+            System.out.println("3.Numero de errores");
+            System.out.println("4.Tiempo de aparición");
+            System.out.println("5.Zoom");
+            System.out.println("6.Jugar");
 
 
-    int opcion2;
-    opcion2=sc.nextInt();
+            int opcion2;
+            opcion2=sc.nextInt();
     
-        switch(opcion2)
-        {
-        case 1:
-            TamañoTablero(opciones);
-            break;
-        case 2:
-            Dificultad();
-            break;
-        case 3:
-            NumeroDeErrores(opciones);
-            break;
-        case 4:
-            TiempoDeAparición(opciones);
-            break;
-        case 5:
-            Zoom();
-            break;
-        case 6:
-            salida=false;
-            break;
-        default:
-          System.out.println("Elige una opción correcta");    
-                 
-          }
-        }while(salida==true);
-    }
+            switch(opcion2)
+            {
+            case 1:
+                TamañoTablero(opciones);
+                break;
+            case 2:
+                Dificultad();
+                break;
+            case 3:
+                NumeroDeErrores(opciones);
+                break;
+            case 4:
+                TiempoDeAparición(opciones);
+                break;
+            case 5:
+                Zoom();
+                break;
+            case 6:
+                salida=false;
+                break;
+            default:
+              System.out.println("Elige una opción correcta");    
+
+              }
+            }while(salida==true);
+        }
 
 public static void TamañoTablero(int[]opciones)
 {
@@ -96,6 +103,7 @@ public static void TamañoTablero(int[]opciones)
     opciones[0] = sc.nextInt();
     System.out.println("Introduce cuantas columnas quieres");
     opciones[1] = sc.nextInt();    
+    limpiarPantalla();
 }
 
 
@@ -117,6 +125,7 @@ public static void NumeroDeErrores(int[]opciones)
         System.out.println("Nota: como maximo tienes 12 intentos");
         
         opciones[6]=sc.nextInt();
+        limpiarPantalla();
     }
 
 public static void TiempoDeAparición(int[]opciones)
@@ -124,11 +133,17 @@ public static void TiempoDeAparición(int[]opciones)
         Scanner sc = new Scanner(System.in);
 
         int TiempoDeAparicion;
-        System.out.println("Cuantos milesegundos quieres que aparezca");
+        System.out.println("Cuantos milesegundos quieres que aparezca(0-4000)");
         System.out.println("Nota: 1000 milesegundos es igual a 1 segundo");
         
         opciones[4]=sc.nextInt();
-        
+        while(opciones[4]>=5000)
+        {
+            System.out.println("Uy ,es demasiado tiempo ");
+            System.out.println("¡Cambialo!");
+            opciones[4]=sc.nextInt();
+            limpiarPantalla();
+        }
     }
 
 public static void Zoom()
@@ -136,23 +151,59 @@ public static void Zoom()
         Scanner sc = new Scanner(System.in);
     }
 
-
+//Limpia la pantalla
+public static void limpiarPantalla()
+{
+    try
+    {
+        String sistemaOperativo=System.getProperty("os.name").toLowerCase();//Mira que sistema operativo es y ponerlo en minuscula porque en el sistema puede estar escrito de otra manera
+        //Si es en windows
+        if(sistemaOperativo.contains("win"))
+        {
+            new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
+        }
+        //Si es Unix/Linux/Mac
+        else
+        {
+            System.out.print("\033[H\033[2J");  
+            System.out.flush();
+        }
+    }
+    catch(Exception e)
+    {
+        System.out.println("Error al limpiar la pantalla: "+ e.getMessage());
+    }
+}
 
 
 
 public static void main(String[] args)
     {
         System.out.println("¡Bienvenido al juego Memorión!");
-        System.out.println("Ajustes:");
         int[]opciones={3,4,0,3,1000,1,6};
-        int intentos = 6, parejasEncontradas = 0;
-       
+        
          
-       
         Scanner sc = new Scanner(System.in);
         //Llamamos al menu de inicio
         menuInicio(opciones);
-       
+        boolean salida=true;
+        menuInicio(opciones);
+        salida=menuInicio(opciones);
+        while(salida==true)
+        {
+        
+        MecanismoDeJuego(opciones);    
+        }
+        
+        
+        
+        
+        
+    
+  }
+ public static void MecanismoDeJuego(int[]opciones)
+    {
+        int  parejasEncontradas = 0;
         String[][] tablero = crearTablero(opciones[0], opciones[1]);
 
         boolean[][] descubiertas = new boolean[opciones[0]][opciones[1]];
@@ -199,9 +250,9 @@ public static void main(String[] args)
                 descubiertas[primeraCelda[0]][primeraCelda[1]] = false;
                 descubiertas[segundaCelda[0]][segundaCelda[1]] = false;
             }      
-            intentos--;    
+            opciones[6]--;    
         }
-        if(intentos>=0)
+        if(opciones[6]>=0)
             {
         System.out.println("¡Felicidades! Has encontrado todas las parejas.");
         System.out.println("Intentos restantes: " + opciones[6]);
@@ -214,15 +265,7 @@ public static void main(String[] args)
             System.out.println("¿Quieres volver a jugar?" );
             menuInicio(opciones);
         }
-       
-        
-        
-        
-        
-        
-    
-  }
-   
+}
 // Mostrar el tablero al jugador
 public static void mostrarTablero(String[][] tablero, boolean[][] descubiertas, int[] opciones) {
         System.out.print("  | ");
@@ -248,7 +291,7 @@ public static void mostrarTablero(String[][] tablero, boolean[][] descubiertas, 
                 }
                 else
                 {
-                    System.out.print(" * |");
+                    System.out.print("   |");
                 }
             }
             System.out.println();
